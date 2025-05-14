@@ -228,11 +228,19 @@ export default function LandingPage() {
         </footer>
 
         {/* Login Modal */}
-        {showLoginModal && <LoginModal setShowLoginModal={setShowLoginModal} />}
+        {showLoginModal && (
+          <LoginModal
+            setShowSignupModal={setShowLoginModal}
+            setShowLoginModal={setShowLoginModal}
+          />
+        )}
 
         {/* Sign Up Modal */}
         {showSignupModal && (
-          <SignupModal setShowSignupModal={setShowSignupModal} />
+          <SignupModal
+            setShowSignupModal={setShowSignupModal}
+            setShowLoginModal={setShowLoginModal}
+          />
         )}
       </div>
       {/* <Outlet /> */}

@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { auth, db } from "../firebase/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 // import { useAuth } from "../context/AuthContext";
 // import { useNavigate } from "react-router-dom";
 
-const SignupModal = ({ setShowSignupModal }) => {
+const SignupModal = ({ setShowLoginModal, setShowSignupModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
 
   // const { signup, currentUser } = useAuth();
@@ -13,17 +17,28 @@ const SignupModal = ({ setShowSignupModal }) => {
   // const navigate = useNavigate();
 
   const handleSignupSubmit = async (e) => {
+    // setIsLoading(true);
     e.preventDefault();
+
     try {
-      // await signup(email, password);
-      setShowSignupModal(false);
-      // if (isAdmin) {
-      //   navigate("/dashboard", { replace: true });
-      // } else {
-      //   navigate("/studentdashboard", { replace: true });
-      // }
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: user.email,
+        username: user.email?.split("@")[0],
+        fullName: fullName,
+        image: "",
+      });
     } catch (error) {
-      setError(error.message);
+      console.log(error);
     }
   };
 
@@ -69,6 +84,8 @@ const SignupModal = ({ setShowSignupModal }) => {
                 id="signup-name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="John Doe"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 required
               />
             </div>

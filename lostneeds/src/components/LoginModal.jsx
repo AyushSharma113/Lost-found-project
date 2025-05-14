@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 // import { useAuth } from "../context/AuthContext";
 // import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-const LoginModal = ({ setShowLoginModal }) => {
+const LoginModal = ({ setShowLoginModal, setShowSignupModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -13,21 +15,13 @@ const LoginModal = ({ setShowLoginModal }) => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt started");
     try {
-      // await login(email, password);
-      console.log("Login successful, attempting navigation");
-      setShowLoginModal(false);
-      // Check if the logged in user is admin
-      //   if (email === "admin@gmail.com") {
-      //     navigate("/dashboard", { replace: true });
-      //   } else {
-      //     navigate("/studentdashboard");
-      //   }
-      //   console.log("Navigation called");
+      await signInWithEmailAndPassword(auth, email, password);
+
+      console.log("Login successful");
     } catch (error) {
-      //   console.error("Login error:", error);
-      setError(error.message);
+      console.log(error);
+      alert(error.message);
     }
   };
 
