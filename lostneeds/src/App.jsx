@@ -1,11 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LandingPage from "./pages/LandingPage";
 import Navlinks from "./components/Navlinks";
 import MainDashboard from "./pages/MainDashboard";
 import Chatlist from "./pages/ChatSection";
+import { auth } from "./firebase/firebase";
 
 function App() {
-  return <MainDashboard />;
+  const [isLogin, setIsLogin] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser);
+    }
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return <>{user ? <MainDashboard /> : <LandingPage />}</>;
 }
 
 export default App;

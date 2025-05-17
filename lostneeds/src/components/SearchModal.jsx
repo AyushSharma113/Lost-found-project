@@ -3,15 +3,47 @@ import { FaSearch } from "react-icons/fa";
 import { RiSearchLine } from "react-icons/ri";
 import { FaXmark } from "react-icons/fa6";
 import defaultAvatar from "/default.jpg";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../firebase/firebase"; // Adjust the import path as necessary
+import { where } from "firebase/firestore";
 
-const SearchModal = () => {
+const SearchModal = ({ startChat }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState([]);
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSearch = () => {
-    console.log("Searching for:", searchTerm);
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      alert("Please enter a search term");
+      return;
+    }
+
+    try {
+      const normalizedSearchTerm = searchTerm.toLowerCase();
+      const q = query(
+        collection(db, "users"),
+        where("username", ">=", normalizedSearchTerm),
+        where("username", "<=", normalizedSearchTerm + "\uf8ff")
+      );
+      const querySnapshot = await getDocs(q); // execute the query and return the results
+
+      const foundUsers = [];
+
+      querySnapshot.forEach((doc) => {
+        foundUsers.push(doc.data());
+      });
+
+      setUsers(foundUsers);
+
+      if (foundUsers.length === 0) {
+        alert("No users found");
+      }
+    } catch (error) {
+      console.error("Error searching for users:", error);
+    }
   };
 
   return (
@@ -61,26 +93,30 @@ const SearchModal = () => {
                   </div>
                 </div>
                 <div className="mt-6">
-                  <div
-                    onClick={() => {
-                      //   console.log(user);
-                      //   startChat(user);
-                      closeModal();
-                    }}
-                    className="flex items-start gap-3 bg-[#15eabc34] p-2 mb-3 rounded-lg cursor-pointer border border-[#ffffff20] shadow-lg "
-                  >
-                    <img
-                      src={defaultAvatar}
-                      className="h-[40px] w-[40px] rounded-full"
-                      alt=""
-                    />
-                    <span>
-                      <h2 className="p-0 font-semibold text-white text-[18px]">
-                        Ayush
-                      </h2>
-                      <p className="text-[13px] text-white">sharma</p>
-                    </span>
-                  </div>
+                  {users?.map((user) => (
+                    <div
+                      onClick={() => {
+                        console.log(user);
+                        startChat(user);
+                        closeModal();
+                      }}
+                      className="flex items-start gap-3 bg-[#15eabc34] p-2 mb-3 rounded-lg cursor-pointer border border-[#ffffff20] shadow-lg "
+                    >
+                      <img
+                        src={user?.image || defaultAvatar}
+                        className="h-[40px] w-[40px] rounded-full"
+                        alt=""
+                      />
+                      <span>
+                        <h2 className="p-0 font-semibold text-white text-[18px]">
+                          {user?.fullName}
+                        </h2>
+                        <p className="text-[13px] text-white">
+                          @{user?.username}
+                        </p>
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
