@@ -31,7 +31,7 @@ const Navlinks = ({ setActivetab }) => {
             <span className="flex items-center justify-center ">
               <img
                 src={logo}
-                className="w-[100px] bg-white h-[102px] object-contain bg-transparent rounded-lg p-2"
+                className="w-[100px]  h-[102px] object-contain bg-transparent rounded-lg p-2"
                 alt=""
               />
             </span>
@@ -60,7 +60,10 @@ const Navlinks = ({ setActivetab }) => {
               </button>
             </li>
             <li className="">
-              <button className="lg:text-[28px] text-[22px] cursor-pointer">
+              <button
+                onClick={() => setActivetab("post")}
+                className="lg:text-[28px] text-[22px] cursor-pointer"
+              >
                 <RiFile4Line color="#fff" />
               </button>
             </li>

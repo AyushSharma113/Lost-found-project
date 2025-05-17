@@ -3,6 +3,7 @@ import Navlinks from "../components/Navlinks";
 import Chatlist from "../components/Chatlist";
 import ChatBox from "../components/ChatBox";
 import ItemCard from "../components/ItemCard";
+import Post from "../components/Post";
 
 const MainDashboard = () => {
   const [activeTab, setActivetab] = useState("home");
@@ -194,6 +195,7 @@ const MainDashboard = () => {
           <ChatBox selectedUser={selectedUser} />
         </>
       )}
+      {activeTab === "post" && <Post />}
     </div>
   );
 };
