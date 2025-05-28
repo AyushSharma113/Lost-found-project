@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import LandingPage from "./pages/LandingPage";
-import Navlinks from "./components/Navlinks";
+
 import MainDashboard from "./pages/MainDashboard";
-import Chatlist from "./pages/ChatSection";
+
 import { auth } from "./firebase/firebase";
 
 function App() {

@@ -1,37 +1,53 @@
 import { useState } from "react";
+import { db, auth } from "../firebase/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function Post() {
-  const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
-  };
+    // Create FormData object from the form element
+    const formElement = e.target;
+    const formData = {
+      description: formElement.description.value,
+      imageUrl: formElement.imageUrl.value,
+      category: formElement.category.value,
+      userEmail: auth.currentUser.email,
+      createdAt: new Date().toISOString(),
+      userId: auth.currentUser.uid,
+    };
 
-  const handleImageUrlChange = (e) => {
-    setImageUrl(e.target.value);
-  };
+    console.log("Form data:", formData);
 
-  const handleSubmit = () => {
-    alert(
-      `Form submitted with description: ${description} and image URL: ${imageUrl}`
-    );
+    // Validate form data
+    if (!formData.description || !formData.imageUrl || !formData.category) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      // Add document to posts collection
+      const docRef = await addDoc(collection(db, "posts"), formData);
+      console.log("Document written with ID: ", docRef.id);
+
+      // Clear form
+      formElement.reset();
+      alert("Post created successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert("Error creating post. Please try again.");
+    }
+
+    console.log("Form data collected:", formData);
+    // You can now send this data to your backend or Firebase
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            Text Input Form
-          </h2>
-          <p className="text-gray-600">
-            Use this form to submit your information. Please provide a
-            description and image URL below.
-          </p>
-        </div>
+        {/* ...existing header code... */}
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="description"
@@ -42,10 +58,10 @@ export default function Post() {
             <input
               type="text"
               id="description"
-              value={description}
-              onChange={handleDescriptionChange}
+              name="description"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter a description"
+              required
             />
           </div>
 
@@ -59,20 +75,43 @@ export default function Post() {
             <input
               type="url"
               id="imageUrl"
-              value={imageUrl}
-              onChange={handleImageUrlChange}
+              name="imageUrl"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="https://example.com/image.jpg"
+              required
             />
           </div>
 
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option defaultValue="" disabled>
+                Select a category
+              </option>
+              <option value="electronics">Electronics</option>
+              <option value="documents">Documents</option>
+              <option value="accessories">Accessories</option>
+              <option value="others">Others</option>
+            </select>
+          </div>
+
           <button
-            onClick={handleSubmit}
+            type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Submit
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
