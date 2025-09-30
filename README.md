@@ -93,15 +93,4 @@ npm run build
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-Made with ❤️ using React + Firebase
-
-```
-
-I'm happy to adjust it to fit your actual project structure.
 ```
